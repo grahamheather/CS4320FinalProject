@@ -14,4 +14,4 @@ http://www.yr.no/artikkel/information-about-the-free-data-1.6810075
 
 Problems:
 - Google Translate Cloud API isn't free (providing a credit card gets $300 of use, good for 12 months, but I couldn't find detailed documentation on how much their billing is for API use or how long $300 would likely last)
-- yr.no documentation is in Norwegian
+- yr.no documentation is in Norwegian (but surfing through Google Translate is pretty effective, translation appears accurate)
