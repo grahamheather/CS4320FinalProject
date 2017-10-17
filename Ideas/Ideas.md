@@ -16,6 +16,11 @@ Problems:
 - Google Translate Cloud API isn't free (providing a credit card gets $300 of use, good for 12 months, but I couldn't find detailed documentation on how much their billing is for API use or how long $300 would likely last)
 - yr.no documentation is in Norwegian (but surfing through Google Translate is pretty effective, translation appears accurate)
 
+##### Apertium + Weather Data
+Possible solution to problems:
+- use Apertium which is free and open-source instead of Google Translate
+- https://www.apertium.org/
+
 ## Tool to help learning the pronunciation of another language
 The goal would be to take another language's writing system, and to produce a description of the sound of each letter using comparisons to sounds in the speaker's native language.
 There are two possible ways of doing this:
