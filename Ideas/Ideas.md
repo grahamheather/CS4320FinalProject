@@ -36,7 +36,7 @@ There are two possible ways of doing this:
   - http://omniglot.com/writing/languages.htm
     - has the information but a little hard to work with
     - see omniglot.com/charts/LANG_NAME_HERE.xls
-    - e.g. omniglot.com/charts/avar.xls
+    - e.g. http://omniglot.com/charts/avar.xls
   - Or maybe the Wikipedia IPA help pages?
     - https://en.wikipedia.org/wiki/Help:IPA/English
   - Example:
