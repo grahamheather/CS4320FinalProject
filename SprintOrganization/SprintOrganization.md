@@ -12,3 +12,10 @@ Results:
   - Sprint starts and ends Wednesday
   - Sprints are 1 week in length
   - Came up with idea: [see ideas page](Ideas.md)
+
+## Sprint 2 (10/25/2017 - 11/1/2017)
+Stories: 8, 9, 10
+
+Overall goals:
+  - familiarize team members with APIs and environments
+  - define requirements, create use case diagram and descriptions
