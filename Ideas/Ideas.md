@@ -1,5 +1,11 @@
 # Ideas
-Resources:
+
+## GitHub API + GroupMe Bots -- CHOSEN
+- Create GroupMe bot that integrates with GitHub to facilitate the Scrum process
+- https://dev.groupme.com/tutorials/bots
+- https://developer.github.com/v3/
+
+## Resources:
 - https://www.computersciencezone.org/50-most-useful-apis-for-developers/
 
 ## Google Translate + Weather Data
