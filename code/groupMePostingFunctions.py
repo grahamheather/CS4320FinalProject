@@ -13,7 +13,7 @@ def postOpenIssues():
     string = '''The current issues are:\\n'''
     for issue in data:
             string += "* " + issue["title"] + "\\n"
-    response = urllib2.urlopen("https://api.groupme.com/v3/bots/post", '{"text" : "' + string + '", "bot_id" : "8dadd0071bcd11d65633faa1d3"}')
+    response = urllib2.urlopen("https://api.groupme.com/v3/bots/post", '{"text" : "' + string + '", "bot_id" : "' + bot_id + '"}')
 
 def postAllCards():
     response = urllib2.urlopen("https://api.waffle.io/"+waffle+"/cards/")
@@ -23,7 +23,7 @@ def postAllCards():
     string = '''The cards are:\\n'''
     for card in data:
         string += "* " + card["githubMetadata"]["title"] + "\\n"
-    response = urllib2.urlopen("https://api.groupme.com/v3/bots/post",  '{"text" : "' + string + '", "bot_id" : "8dadd0071bcd11d65633faa1d3"}')
+    response = urllib2.urlopen("https://api.groupme.com/v3/bots/post",  '{"text" : "' + string + '", "bot_id" : "' + bot_id + '"}')
 
 def postProductBacklogCards():
     response = urllib2.urlopen("https://api.waffle.io/"+waffle+"/cards/")
@@ -34,7 +34,7 @@ def postProductBacklogCards():
     for card in data:
         if card["githubMetadata"]["state"] == "open" and card["githubMetadata"]["labels"] == []:
             string += "* " + card["githubMetadata"]["title"] + "\\n"
-    response = urllib2.urlopen("https://api.groupme.com/v3/bots/post",  '{"text" : "' + string + '", "bot_id" : "8dadd0071bcd11d65633faa1d3"}')
+    response = urllib2.urlopen("https://api.groupme.com/v3/bots/post",  '{"text" : "' + string + '", "bot_id" : "' + bot_id + '"}')
 
 def postSprintBacklogCards():
     response = urllib2.urlopen("https://api.waffle.io/"+waffle+"/cards/")
@@ -45,7 +45,7 @@ def postSprintBacklogCards():
     for card in data:
         if card["githubMetadata"]["state"] == "open" and "help wanted" in map(itemgetter("name"), card["githubMetadata"]["labels"]):
             string += "* " + card["githubMetadata"]["title"] + "\\n"
-    response = urllib2.urlopen("https://api.groupme.com/v3/bots/post",  '{"text" : "' + string + '", "bot_id" : "8dadd0071bcd11d65633faa1d3"}')
+    response = urllib2.urlopen("https://api.groupme.com/v3/bots/post",  '{"text" : "' + string + '", "bot_id" : "' + bot_id + '"}')
 
 def postInProgressCards():
     response = urllib2.urlopen("https://api.waffle.io/"+waffle+"/cards/")
@@ -56,4 +56,4 @@ def postInProgressCards():
     for card in data:
         if card["githubMetadata"]["state"] == "open" and "in progress" in map(itemgetter("name"), card["githubMetadata"]["labels"]):
             string += "* " + card["githubMetadata"]["title"] + "\\n"
-    response = urllib2.urlopen("https://api.groupme.com/v3/bots/post",  '{"text" : "' + string + '", "bot_id" : "8dadd0071bcd11d65633faa1d3"}')
+    response = urllib2.urlopen("https://api.groupme.com/v3/bots/post",  '{"text" : "' + string + '", "bot_id" : "' + bot_id + '"}')
