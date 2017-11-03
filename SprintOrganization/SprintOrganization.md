@@ -19,3 +19,17 @@ Stories: 8, 9, 10
 Overall goals:
   - familiarize team members with APIs and environments
   - define requirements, create use case diagram and descriptions
+
+Results:
+  - a prototype was created to experiment with the basic communication between Waffle, Github, and GroupMe
+  - a use case diagram was created and a flow diagram was drafted
+
+## Sprint 3 (11/1/2017 - 11/8/2017)
+Stories: 12, 15, 16, 13, 9
+
+Overall goals:
+  - create basic functions to connect GroupMe, Waffle, and Github
+  - obtain server
+  - design basic architecture
+  - complete flow diagram
+  - complete use case descriptions
