@@ -1,9 +1,9 @@
 import urllib2
 import json
 from operator import itemgetter
-
-githubRepo = "grahamheather/CS4320FinalProject"
-waffle = "grahamheather/CS4320FinalProject"
+from config import bot_id
+from config import githubRepo
+from config import waffle
 
 def postOpenIssues():
     response = urllib2.urlopen("https://api.github.com/repos/"+githubRepo+"/issues")
