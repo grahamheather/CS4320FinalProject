@@ -1,5 +1,4 @@
 import urllib2
-import httplib
 import json
 import time
 from datetime import datetime, timedelta
