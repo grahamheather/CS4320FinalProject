@@ -2,12 +2,13 @@ import urllib2
 import httplib
 import json
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 from operator import itemgetter
 from config import bot_id
 from config import githubRepo
 from config import waffle
 from config import githubOAuth
+from config import dailyScrumTime
 
 # helper functions
 
@@ -205,15 +206,37 @@ def moveCardInProgressToDone(story_name):
 
 # set sprint properties
 
-#def setDailyScrumTime():
+def setDailyScrumTime(timeString):
+    # NOT persistent
+    dailyScrumTime = time.strptime(timeString, "%H:%M")
+    string = "Daily Scrum meeting time updated to " + timeString
+    response = urllib2.urlopen("https://api.groupme.com/v3/bots/post", '{"text" : "' + string + '", "bot_id" : "' + bot_id + '"}')
 
-#def setSprintGoal():
+def setSprintGoal(new_description):
+    current_milestone = getCurrentMilestone()
+    if current_milestone == None:
+        string = "Cannot set current sprint goal: no current sprint"
+    else:
+        opener = urllib2.build_opener(urllib2.HTTPHandler)
+        request = urllib2.Request('https://api.github.com/repos/'+githubRepo+"/milestones/" + str(current_milestone["number"]) + "?access_token=" + githubOAuth, data='{"description": "' + new_description + '"}')
+        request.get_method = lambda: 'PATCH'
+        response = opener.open(request)
+        string = "The current sprint goal has been updated to:\\n" + new_description
+    response = urllib2.urlopen("https://api.groupme.com/v3/bots/post",  '{"text" : "' + string + '", "bot_id" : "' + bot_id + '"}')
 
-#def setSprintStart():
-
-#def setSprintEnd():
-
-#def setSprintLength():
+def setSprintEnd(dateString):
+    current_milestone = getCurrentMilestone()
+    if current_milestone == None:
+        string = "Cannot update current sprint end: no current sprint"
+    else:
+        opener = urllib2.build_opener(urllib2.HTTPHandler)
+        # unsure why it is necessary to add the extra day
+        request = urllib2.Request('https://api.github.com/repos/'+githubRepo+"/milestones/" + str(current_milestone["number"]) + "?access_token=" + githubOAuth,
+                                  data='{"due_on": "' + datetime.strftime(datetime.strptime(dateString, "%m/%d/%Y") + timedelta(days=1), "%Y-%m-%dT%H:%M:%SZ") + '"}')
+        request.get_method = lambda: 'PATCH'
+        response = opener.open(request)
+        string = "The current sprint now ends in " + str((datetime.strptime(dateString, "%m/%d/%Y") - datetime.now()).days + 1) + " day(s) on " + dateString
+    response = urllib2.urlopen("https://api.groupme.com/v3/bots/post",  '{"text" : "' + string + '", "bot_id" : "' + bot_id + '"}')
 
 # sprint meetings
 
