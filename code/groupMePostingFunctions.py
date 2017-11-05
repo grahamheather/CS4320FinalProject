@@ -57,3 +57,62 @@ def postInProgressCards():
         if card["githubMetadata"]["state"] == "open" and "in progress" in map(itemgetter("name"), card["githubMetadata"]["labels"]):
             string += "* " + card["githubMetadata"]["title"] + "\\n"
     response = urllib2.urlopen("https://api.groupme.com/v3/bots/post",  '{"text" : "' + string + '", "bot_id" : "' + bot_id + '"}')
+
+#def createStory():
+
+#def assignPointsToStory():
+
+def postSprintGoal():
+    response = urllib2.urlopen("https://api.github.com/repos/"+githubRepo+"/milestones")
+    result = response.read()
+    decoder = json.JSONDecoder()
+    data = decoder.decode(result)
+    earliest = None
+    earliest_milestone = None
+    for milestone in data:
+        if earliest == None:
+            earliest = milestone['due_on']
+            earliest_milestone = milestone
+        # may want to check if the earliest sprint is actually unclosed but already completed sprint
+        elif time.strptime(milestone['due_on'], "%Y-%m-%dT%H:%M:%SZ") < time.strptime(earliest, "%Y-%m-%dT%H:%M:%SZ"):
+            earliest = milestone['due_on']
+            earliest_milestone = milestone
+    if earliest_milestone == None:
+        string = "Cannot print current sprint goal: no current sprint"
+    else:
+        string = "The current sprint goal is:\\n" + milestone['description'].replace('\r', '').replace('\n', '\\n')
+    print "https://api.groupme.com/v3/bots/post",  '{"text" : "' + string + '", "bot_id" : "' + bot_id + '"}'
+    response = urllib2.urlopen("https://api.groupme.com/v3/bots/post",  '{"text" : "' + string + '", "bot_id" : "' + bot_id + '"}')
+            
+
+#def postSprintLength():
+
+#def postSprintStart():
+
+#def postSprintEnd():
+
+#def moveCard():
+
+#def moveCardProductToSprintBacklog():
+
+#def moveCardSprintBacklogToInProgress():
+
+#def moveCardInProgressToComplete():
+
+#def postDailyScrum():
+
+#def setDailyScrumTime():
+
+#def setSprintGoal():
+
+#def setSprintStart():
+
+#def setSprintEnd():
+
+#def setSprintLength():
+
+#def startSprintReview():
+
+#def startSprintRetrospective():
+
+postSprintGoal()
