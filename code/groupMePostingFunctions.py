@@ -1,4 +1,5 @@
 import urllib2
+import httplib
 import json
 import time
 from datetime import datetime
@@ -6,8 +7,10 @@ from operator import itemgetter
 from config import bot_id
 from config import githubRepo
 from config import waffle
+from config import githubOAuth
 
 # helper functions
+
 def getCurrentMilestone():
     response = urllib2.urlopen("https://api.github.com/repos/"+githubRepo+"/milestones")
     result = response.read()
@@ -24,6 +27,7 @@ def getCurrentMilestone():
             earliest = milestone['due_on']
             earliest_milestone = milestone
     return earliest_milestone
+
 
 # posting functions
 
@@ -80,10 +84,6 @@ def postInProgressCards():
             string += "* " + card["githubMetadata"]["title"] + "\\n"
     response = urllib2.urlopen("https://api.groupme.com/v3/bots/post",  '{"text" : "' + string + '", "bot_id" : "' + bot_id + '"}')
 
-#def createStory():
-
-#def assignPointsToStory():
-
 def postSprintGoal():
     current_milestone = getCurrentMilestone()
     if current_milestone == None:
@@ -116,15 +116,94 @@ def postSprintEnd():
         string = "The current sprint ends in " + str((datetime.strptime(current_milestone['due_on'], "%Y-%m-%dT%H:%M:%SZ") - datetime.now()).days + 1) + " day(s) at " + current_milestone['due_on']
     response = urllib2.urlopen("https://api.groupme.com/v3/bots/post",  '{"text" : "' + string + '", "bot_id" : "' + bot_id + '"}')
 
-#def moveCard():
 
-#def moveCardProductToSprintBacklog():
+# create and modify stories
 
-#def moveCardSprintBacklogToInProgress():
+def createStory(story_name):
+    response = urllib2.urlopen("https://api.github.com/repos/"+githubRepo+"/issues?access_token=" + githubOAuth, data='{"title": "' + story_name + '"}')
+    result = response.read()
+    decoder = json.JSONDecoder()
+    data = decoder.decode(result)
+    string = "Story '" + story_name + "' created."
+    response = urllib2.urlopen("https://api.groupme.com/v3/bots/post", '{"text" : "' + string + '", "bot_id" : "' + bot_id + '"}')
 
-#def moveCardInProgressToComplete():
+#def assignPointsToStory():
 
-#def postDailyScrum():
+def moveCardProductToSprintBacklog(story_name):
+    response = urllib2.urlopen("https://api.github.com/repos/"+githubRepo+"/issues")
+    result = response.read()
+    decoder = json.JSONDecoder()
+    data = decoder.decode(result)
+    requested_story = None
+    for card in data:
+        if card["title"] == story_name:
+            found = True
+            requested_story = card
+    if not found:
+        string = "Could not move the story from the product backlog to the sprint backlog: story not found"
+    elif requested_story["state"] == "open" and "in progress" not in map(itemgetter("name"), requested_story["labels"]) and "help wanted" not in map(itemgetter("name"), requested_story["labels"]):
+        string = "Story '" + story_name + "' moved from the product backlog to the sprint backlog"
+        response = urllib2.urlopen("https://api.github.com/repos/"+githubRepo+"/issues/" + str(requested_story["number"]) + "/labels?access_token=" + githubOAuth, data='["help wanted"]')
+        result = response.read()
+        decoder = json.JSONDecoder()
+        data = decoder.decode(result)
+    else:
+        string = "Could not move the story from the product backlog to the sprint backlog: story not in product backlog"
+    response = urllib2.urlopen("https://api.groupme.com/v3/bots/post", '{"text" : "' + string + '", "bot_id" : "' + bot_id + '"}')
+
+def moveCardSprintBacklogToInProgress(story_name):
+    response = urllib2.urlopen("https://api.github.com/repos/"+githubRepo+"/issues")
+    result = response.read()
+    decoder = json.JSONDecoder()
+    data = decoder.decode(result)
+    requested_story = None
+    for card in data:
+        if card["title"] == story_name:
+            found = True
+            requested_story = card
+    if not found:
+        string = "Could not move the story from the sprint backlog to in progress: story not found"
+    elif requested_story["state"] == "open" and "help wanted" in map(itemgetter("name"), requested_story["labels"]):
+        string = "Story '" + story_name + "' moved from the sprint backlog to in progress"
+        opener = urllib2.build_opener(urllib2.HTTPHandler)
+        request = urllib2.Request('https://api.github.com/repos/'+githubRepo+"/issues/" + str(requested_story["number"]) + "/labels/help%20wanted?access_token=" + githubOAuth)
+        request.get_method = lambda: 'DELETE'
+        response = opener.open(request)
+        response = urllib2.urlopen("https://api.github.com/repos/"+githubRepo+"/issues/" + str(requested_story["number"]) + "/labels?access_token=" + githubOAuth, data='["in progress"]')
+        result = response.read()
+        decoder = json.JSONDecoder()
+        data = decoder.decode(result)
+    else:
+        string = "Could not move the story from the sprint backlog to in progress: story not in sprint backlog"
+    response = urllib2.urlopen("https://api.groupme.com/v3/bots/post", '{"text" : "' + string + '", "bot_id" : "' + bot_id + '"}') 
+
+def moveCardInProgressToDone(story_name):
+    response = urllib2.urlopen("https://api.github.com/repos/"+githubRepo+"/issues")
+    result = response.read()
+    decoder = json.JSONDecoder()
+    data = decoder.decode(result)
+    requested_story = None
+    for card in data:
+        if card["title"] == story_name:
+            found = True
+            requested_story = card
+    if not found:
+        string = "Could not move the story from in progress to done: story not found"
+    elif requested_story["state"] == "open" and "in progress" in map(itemgetter("name"), requested_story["labels"]):
+        string = "Story '" + story_name + "' moved from in progress to done"
+        opener = urllib2.build_opener(urllib2.HTTPHandler)
+        request = urllib2.Request('https://api.github.com/repos/'+githubRepo+"/issues/" + str(requested_story["number"]) + "/labels/in%20progress?access_token=" + githubOAuth)
+        request.get_method = lambda: 'DELETE'
+        response = opener.open(request)
+        opener = urllib2.build_opener(urllib2.HTTPHandler)
+        request = urllib2.Request('https://api.github.com/repos/'+githubRepo+"/issues/" + str(requested_story["number"]) + "?access_token=" + githubOAuth, data='{"state": "closed"}')
+        request.get_method = lambda: 'PATCH'
+        response = opener.open(request)
+    else:
+        string = "Could not move the story from in progress to done: story not in progress"
+    response = urllib2.urlopen("https://api.groupme.com/v3/bots/post", '{"text" : "' + string + '", "bot_id" : "' + bot_id + '"}')
+
+# set sprint properties
 
 #def setDailyScrumTime():
 
@@ -135,6 +214,10 @@ def postSprintEnd():
 #def setSprintEnd():
 
 #def setSprintLength():
+
+# sprint meetings
+
+#def postDailyScrum():
 
 #def startSprintReview():
 
