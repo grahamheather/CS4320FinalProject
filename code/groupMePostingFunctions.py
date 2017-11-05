@@ -136,6 +136,7 @@ def moveCardProductToSprintBacklog(story_name):
     decoder = json.JSONDecoder()
     data = decoder.decode(result)
     requested_story = None
+    found = False
     for card in data:
         if card["title"] == story_name:
             found = True
@@ -158,6 +159,7 @@ def moveCardSprintBacklogToInProgress(story_name):
     decoder = json.JSONDecoder()
     data = decoder.decode(result)
     requested_story = None
+    found = False
     for card in data:
         if card["title"] == story_name:
             found = True
@@ -184,6 +186,7 @@ def moveCardInProgressToDone(story_name):
     decoder = json.JSONDecoder()
     data = decoder.decode(result)
     requested_story = None
+    found = False
     for card in data:
         if card["title"] == story_name:
             found = True
@@ -238,10 +241,145 @@ def setSprintEnd(dateString):
         string = "The current sprint now ends in " + str((datetime.strptime(dateString, "%m/%d/%Y") - datetime.now()).days + 1) + " day(s) on " + dateString
     response = urllib2.urlopen("https://api.groupme.com/v3/bots/post",  '{"text" : "' + string + '", "bot_id" : "' + bot_id + '"}')
 
+
 # sprint meetings
 
-#def postDailyScrum():
+def startSprintPlanning():
+    string = "Beginning sprint planning meeting now."
+    response = urllib2.urlopen("https://api.groupme.com/v3/bots/post",  '{"text" : "' + string + '", "bot_id" : "' + bot_id + '"}')
+    current_milestone = getCurrentMilestone()
+    if current_milestone == None:
+        string = "Cannot estimate recommended sprint planning meeting length: current sprint length not found"
+    else:
+        meeting_length = ((datetime.strptime(current_milestone['due_on'], "%Y-%m-%dT%H:%M:%SZ") - datetime.strptime(current_milestone['created_at'], "%Y-%m-%dT%H:%M:%SZ")).days + 1) * 2 / 7
+        string = "It is recommended that the sprint planning meeting last less than " + str(meeting_length) + " hours as there are " + str((datetime.strptime(current_milestone['due_on'], "%Y-%m-%dT%H:%M:%SZ") - datetime.strptime(current_milestone['created_at'], "%Y-%m-%dT%H:%M:%SZ")).days + 1) + " days in this sprint.  It should end by " + datetime.strftime((datetime.now() + timedelta(hours=meeting_length)), "%H:%M")
+        response = urllib2.urlopen("https://api.groupme.com/v3/bots/post",  '{"text" : "' + string + '", "bot_id" : "' + bot_id + '"}')
+    postProductBacklogCards()
+    time.sleep(60*60*meeting_length)
+    string = "Sprint planning meeting time limit expired."
+    response = urllib2.urlopen("https://api.groupme.com/v3/bots/post",  '{"text" : "' + string + '", "bot_id" : "' + bot_id + '"}')
 
-#def startSprintReview():
+def startDailyScrum():
+    dayStart = datetime.now() - timedelta(days=1)
+    dayEnd = datetime.now()
+    current_milestone = getCurrentMilestone()
+    info = {}
+    if not current_milestone == None:
+        response = urllib2.urlopen("https://api.waffle.io/"+waffle+"/cards/")
+        result = response.read()
+        decoder = json.JSONDecoder()
+        data = decoder.decode(result)
+        for card in data:
+            cardFinished = datetime.strptime(card["githubMetadata"]["closed_at"], "%Y-%m-%dT%H:%M:%S.000Z") 
+            if card["githubMetadata"]["state"] == "closed" and cardFinished > dayStart and cardFinished < dayEnd:
+                if "assignees" in card["githubMetadata"] and card["githubMetadata"]["assignees"] != []:
+                    for assignee in card["githubMetadata"]["assignees"]:
+                        if assignee["login"] not in info.keys():
+                            info[assignee["login"]] = {"did":[], "willDo":[], "impediments":[]}
+                        info[assignee]["did"] += [card["githubMetadata"]["title"]]
+            elif card["githubMetadata"]["state"] == "open" and "in progress" in map(itemgetter("name"), card["githubMetadata"]["labels"]):
+                if "assignees" in card["githubMetadata"] and card["githubMetadata"]["assignees"] != []:
+                    for assignee in card["githubMetadata"]["assignees"]:
+                        if assignee["login"] not in info:
+                            info[assignee["login"]] = {"did":[], "willDo":[], "impediments":[]}
+                        info[assignee["login"]]["willDo"] += [card["githubMetadata"]["title"]]
+                        
+        response = urllib2.urlopen("https://api.github.com/repos/"+githubRepo+"/issues")
+        result = response.read()
+        decoder = json.JSONDecoder()
+        data = decoder.decode(result)
+        requested_story = None
+        found = False
+        for card in data:
+            cardCreated = datetime.strptime(card["created_at"], "%Y-%m-%dT%H:%M:%SZ")
+            if card["state"] == "open" and cardCreated > dayStart and cardCreated < dayEnd:
+                if card["creator"]["login"] not in info:
+                    info[card["creator"]["login"]] = {"did": [], "willDo": [], "impediments":[]}
+                info[card["creator"]["login"]]["impediments"] += [card["title"]]
 
-#def startSprintRetrospective():
+        string = "Daily Scrum:\\n"
+        for person in info:
+            string += "\\n" + person + ":\\n\\tDid:\\n"
+            for story in info[person]["did"]:
+                string += "\\t\\t* " + story + "\\n"
+            string += "\\tWill do today:\\n"
+            for story in info[person]["willDo"]:
+                string += "\\t\\t* " + story + "\\n"
+            string += "\\tImpediments:\\n"
+            for story in info[person]["impediments"]:
+                string += "\\t\\t* " + story + "\\n"
+    else:
+        string = "Could not post daily scrum meeting: current sprint not found"
+    response = urllib2.urlopen("https://api.groupme.com/v3/bots/post",  '{"text" : "' + string + '", "bot_id" : "' + bot_id + '"}')
+
+startDailyScrum()
+
+def startSprintReview():
+    string = "Beginning sprint review meeting now."
+    response = urllib2.urlopen("https://api.groupme.com/v3/bots/post",  '{"text" : "' + string + '", "bot_id" : "' + bot_id + '"}')
+    current_milestone = getCurrentMilestone()
+    if current_milestone == None:
+        string = "Cannot estimate recommended sprint review meeting length: current sprint length not found"
+    else:
+        sprintStart = datetime.strptime(current_milestone['created_at'], "%Y-%m-%dT%H:%M:%SZ")
+        sprintEnd = datetime.strptime(current_milestone['due_on'], "%Y-%m-%dT%H:%M:%SZ")
+        meeting_length = ((sprintEnd - sprintStart).days + 1) * 2 / 7
+        string = "It is recommended that the sprint review meeting last less than " + str(meeting_length) + " hours as there were " + str((sprintEnd - sprintStart).days + 1) + " days in this sprint (using the 2 hours / week of sprint rule).  It should end by " + datetime.strftime((datetime.now() + timedelta(hours=meeting_length)), "%H:%M")
+        response = urllib2.urlopen("https://api.groupme.com/v3/bots/post",  '{"text" : "' + string + '", "bot_id" : "' + bot_id + '"}')
+
+    postSprintGoal()
+    postSprintBacklogCards()
+    postInProgressCards()
+    
+    if not current_milestone == None:
+        # post cards completed this sprint
+        response = urllib2.urlopen("https://api.waffle.io/"+waffle+"/cards/")
+        result = response.read()
+        decoder = json.JSONDecoder()
+        data = decoder.decode(result)
+        string = "Stories completed this sprint:\\n"
+        for card in data:
+            cardFinished = datetime.strptime(card["githubMetadata"]["closed_at"], "%Y-%m-%dT%H:%M:%S.000Z") 
+            if card["githubMetadata"]["state"] == "closed" and cardFinished > sprintStart and cardFinished < sprintEnd:
+                string += "* " + card["githubMetadata"]["title"] + "\\n"
+        response = urllib2.urlopen("https://api.groupme.com/v3/bots/post",  '{"text" : "' + string + '", "bot_id" : "' + bot_id + '"}')
+    
+    time.sleep(60*60*meeting_length)
+    string = "Sprint review meeting time limit expired."
+    response = urllib2.urlopen("https://api.groupme.com/v3/bots/post",  '{"text" : "' + string + '", "bot_id" : "' + bot_id + '"}')
+
+def startSprintRetrospective():
+    string = "Beginning sprint retrospective meeting now."
+    response = urllib2.urlopen("https://api.groupme.com/v3/bots/post",  '{"text" : "' + string + '", "bot_id" : "' + bot_id + '"}')
+    current_milestone = getCurrentMilestone()
+    if current_milestone == None:
+        string = "Cannot estimate recommended sprint retrospective meeting length: current sprint length not found"
+    else:
+        sprintStart = datetime.strptime(current_milestone['created_at'], "%Y-%m-%dT%H:%M:%SZ")
+        sprintEnd = datetime.strptime(current_milestone['due_on'], "%Y-%m-%dT%H:%M:%SZ")
+        meeting_length = ((sprintEnd - sprintStart).days + 1) * 2 / 7
+        string = "It is recommended that the sprint retrospective meeting last less than " + str(meeting_length) + " hours as there were " + str((sprintEnd - sprintStart).days + 1) + " days in this sprint (using the 2 hours / week of sprint rule).  It should end by " + datetime.strftime((datetime.now() + timedelta(hours=meeting_length)), "%H:%M")
+        response = urllib2.urlopen("https://api.groupme.com/v3/bots/post",  '{"text" : "' + string + '", "bot_id" : "' + bot_id + '"}')
+
+    postSprintBacklogCards()
+    postInProgressCards()
+
+    if not current_milestone == None:
+        # count story points completed this sprint
+        response = urllib2.urlopen("https://api.waffle.io/"+waffle+"/cards/")
+        result = response.read()
+        decoder = json.JSONDecoder()
+        data = decoder.decode(result)
+        size_count = 0
+        for card in data:
+            cardFinished = datetime.strptime(card["githubMetadata"]["closed_at"], "%Y-%m-%dT%H:%M:%S.000Z") 
+            if card["githubMetadata"]["state"] == "closed" and cardFinished > sprintStart and cardFinished < sprintEnd:
+                if "size" in card:
+                    size_count += card["size"]
+        string = "The velocity for this sprint was: " + str(size_count) + " story points / sprint"
+        response = urllib2.urlopen("https://api.groupme.com/v3/bots/post",  '{"text" : "' + string + '", "bot_id" : "' + bot_id + '"}')
+
+
+    time.sleep(60*60*meeting_length)
+    string = "Sprint retrospective meeting time limit expired."
+    response = urllib2.urlopen("https://api.groupme.com/v3/bots/post",  '{"text" : "' + string + '", "bot_id" : "' + bot_id + '"}')
