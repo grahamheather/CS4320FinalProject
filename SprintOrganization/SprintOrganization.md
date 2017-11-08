@@ -33,3 +33,12 @@ Overall goals:
   - design basic architecture
   - complete flow diagram
   - complete use case descriptions
+
+Stand up meeting:
+  - Heather:
+    - Done since the last meeting:
+      - Implemented functions for posting to GroupMe and pulling information from GitHub and Waffle
+    - Will do before next meeting:
+      - Implement receiving events from GroupMe
+    - Impediments:
+      - None
