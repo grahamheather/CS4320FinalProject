@@ -33,3 +33,6 @@ Overall goals:
   - design basic architecture
   - complete flow diagram
   - complete use case descriptions
+
+Results:
+  - the flow diagram was finished
