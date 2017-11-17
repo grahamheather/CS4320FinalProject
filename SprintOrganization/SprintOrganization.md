@@ -42,6 +42,10 @@ Stand up meeting (11/8/2017):
       - Implement receiving events from GroupMe
     - Impediments:
       - None
+      
+Results:
+  - the flow diagram was finished
+
 
 ## Sprint 4 (11/8/2017 - 11/15/2017)
 Stories: 28, 17, 9, 21
