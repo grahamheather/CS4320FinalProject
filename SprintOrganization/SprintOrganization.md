@@ -34,5 +34,30 @@ Overall goals:
   - complete flow diagram
   - complete use case descriptions
 
+Stand up meeting (11/8/2017):
+  - Heather:
+    - Done since the last meeting:
+      - Implemented functions for posting to GroupMe and pulling information from GitHub and Waffle
+    - Will do before next meeting:
+      - Implement receiving events from GroupMe
+    - Impediments:
+      - None
+      
 Results:
   - the flow diagram was finished
+
+
+## Sprint 4 (11/8/2017 - 11/15/2017)
+Stories: 28, 17, 9, 21
+
+Overall goals:
+  - reach MVP
+  - documentation
+
+Sprint Retrospective:
+  - Working with new technologies proved to be significantly more difficult than expected
+  - Future sprints should not expect as much progress while exploring new technologies as when working with familiar ones.
+
+## Sprint 5 (11/15/2017 - 11/22/2017)
+Overall goals:
+  - set up server
