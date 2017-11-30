@@ -11,7 +11,7 @@ Overall goals:
 Results:
   - Sprint starts and ends Wednesday
   - Sprints are 1 week in length
-  - Came up with idea: [see ideas page](Ideas.md)
+  - Came up with idea: [see ideas page](../Ideas/Ideas.md)
 
 ## Sprint 2 (10/25/2017 - 11/1/2017)
 Stories: 8, 9, 10
@@ -42,7 +42,7 @@ Stand up meeting (11/8/2017):
       - Implement receiving events from GroupMe
     - Impediments:
       - None
-      
+
 Results:
   - the flow diagram was finished
 
@@ -58,6 +58,14 @@ Sprint Retrospective:
   - Working with new technologies proved to be significantly more difficult than expected
   - Future sprints should not expect as much progress while exploring new technologies as when working with familiar ones.
 
-## Sprint 5 (11/15/2017 - 11/22/2017)
+## 11/15/2017 - 11/29/2017
+No formal sprint due to significant overlap with Thanksgiving break.
+Work was done on setting up the server.
+
+## Sprint 5 (11/29/2017 - 12/6/2017)
+Stories: 17, 31, 28
+
 Overall goals:
   - set up server
+  - implement receiving events from GroupMe on server
+  - architecture documentation
