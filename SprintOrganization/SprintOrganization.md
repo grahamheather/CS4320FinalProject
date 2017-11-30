@@ -11,7 +11,7 @@ Overall goals:
 Results:
   - Sprint starts and ends Wednesday
   - Sprints are 1 week in length
-  - Came up with idea: [see ideas page](Ideas.md)
+  - Came up with idea: [see ideas page](../Ideas/Ideas.md)
 
 ## Sprint 2 (10/25/2017 - 11/1/2017)
 Stories: 8, 9, 10
