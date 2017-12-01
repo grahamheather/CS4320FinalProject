@@ -1,6 +1,8 @@
 # CS4320FinalProject
 Our project is a bot that will assist in organizing Scrum using [GroupMe](https://groupme.com) (for communication), [Waffle](https://waffle.io) (for project management), and [GitHub](https://GitHub.com) (for version control).  The bot will help coordinate and organize actions from all three services.
 
+A guide to using the bot can be found [here](Guide.md).
+
 A summary for each of the sprints completed for this project can be found [here](SprintOrganization/SprintOrganization.md).
 
 Sprint organization tools and metrics (on Waffle):
