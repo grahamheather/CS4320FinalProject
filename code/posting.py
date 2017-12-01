@@ -137,7 +137,7 @@ def moveCardProductToSprintBacklog(story_name):
     requested_story = None
     found = False
     for card in data:
-        if card["title"] == story_name:
+        if card["title"].lower() == story_name:
             found = True
             requested_story = card
     if not found:
@@ -160,7 +160,7 @@ def moveCardSprintBacklogToInProgress(story_name):
     requested_story = None
     found = False
     for card in data:
-        if card["title"] == story_name:
+        if card["title"].lower() == story_name:
             found = True
             requested_story = card
     if not found:
@@ -187,7 +187,7 @@ def moveCardInProgressToDone(story_name):
     requested_story = None
     found = False
     for card in data:
-        if card["title"] == story_name:
+        if card["title"].lower() == story_name:
             found = True
             requested_story = card
     if not found:
@@ -275,26 +275,25 @@ def startDailyScrum():
                     for assignee in card["githubMetadata"]["assignees"]:
                         if assignee["login"] not in info.keys():
                             info[assignee["login"]] = {"did":[], "willDo":[], "impediments":[]}
-                        info[assignee]["did"] += [card["githubMetadata"]["title"]]
+                        info[assignee["login"]]["did"] += [card["githubMetadata"]["title"]]
             elif card["githubMetadata"]["state"] == "open" and "in progress" in map(itemgetter("name"), card["githubMetadata"]["labels"]):
                 if "assignees" in card["githubMetadata"] and card["githubMetadata"]["assignees"] != []:
                     for assignee in card["githubMetadata"]["assignees"]:
                         if assignee["login"] not in info:
                             info[assignee["login"]] = {"did":[], "willDo":[], "impediments":[]}
                         info[assignee["login"]]["willDo"] += [card["githubMetadata"]["title"]]
-                        
+
         response = urllib2.urlopen("https://api.github.com/repos/"+githubRepo+"/issues")
         result = response.read()
         decoder = json.JSONDecoder()
         data = decoder.decode(result)
         requested_story = None
-        found = False
         for card in data:
             cardCreated = datetime.strptime(card["created_at"], "%Y-%m-%dT%H:%M:%SZ")
             if card["state"] == "open" and cardCreated > dayStart and cardCreated < dayEnd:
-                if card["creator"]["login"] not in info:
-                    info[card["creator"]["login"]] = {"did": [], "willDo": [], "impediments":[]}
-                info[card["creator"]["login"]]["impediments"] += [card["title"]]
+                if card["user"]["login"] not in info:
+                    info[card["user"]["login"]] = {"did": [], "willDo": [], "impediments" :[]}
+                info[card["user"]["login"]]["impediments"] +=[card["title"]]
 
         string = "Daily Scrum:\\n"
         for person in info:
@@ -310,8 +309,6 @@ def startDailyScrum():
     else:
         string = "Could not post daily scrum meeting: current sprint not found"
     response = urllib2.urlopen("https://api.groupme.com/v3/bots/post",  '{"text" : "' + string + '", "bot_id" : "' + bot_id + '"}')
-
-startDailyScrum()
 
 def startSprintReview():
     string = "Beginning sprint review meeting now."
@@ -382,3 +379,6 @@ def startSprintRetrospective():
     time.sleep(60*60*meeting_length)
     string = "Sprint retrospective meeting time limit expired."
     response = urllib2.urlopen("https://api.groupme.com/v3/bots/post",  '{"text" : "' + string + '", "bot_id" : "' + bot_id + '"}')
+
+def post(string):
+    response = urllib2.urlopen("https://api.groupme.com/v3/bots/post", '{"text" : "' + string + '", "bot_id" : "' + bot_id + '"}')
