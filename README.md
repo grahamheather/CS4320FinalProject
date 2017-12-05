@@ -19,4 +19,4 @@ Documentation:
 A summary of ideas explored for the final project can be found [here](Ideas/Ideas.md).
 
 The license for this project can be found in [LICENSE.md](LICENSE.md).
-The license for Flask which is used by, but not included in, this project can be found in [FlaskLicense.md](FlaskLicense.md).
+The license for Flask which is used by, but not included in, this project can be found in [FlaskLicense.txt](FlaskLicense.txt).
