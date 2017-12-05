@@ -13,5 +13,7 @@ Documentation:
   - [Flow diagram](CS4320FinalProject_FlowDiagram.pdf)
   - [Use case descriptions](CS4320FinalProject_UseCaseDescription.md)
   - [Use case diagram](CS4320FinalProject_UseCaseDiagram.pdf)
+  - [Architecture diagram](Architecture.pdf)
+  - [Architecture diagram notes](Architecture_Documentation.md)
 
 A summary of ideas explored for the final project can be found [here](Ideas/Ideas.md).

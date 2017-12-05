@@ -72,4 +72,6 @@ Overall goals:
 
 Sprint Retrospective:
   - After the initial breakthrough necessary to successfully set up the server, implementing receiving events was straightforward
-  
+
+# Overall Retrospective
+The final product is functional and meets the basic features necessary for the bot to be useful.  There are still several stories in the product backlog (which is reasonable, as requests for new features and improvements are usually created at a much greater rate than those features can be implemented).  Given another sprint, the next step would have been to reorganize the architecture.  Following Agile methodology, working code was prioritized, with the architecture being modified and improved incrementally as necessary.
