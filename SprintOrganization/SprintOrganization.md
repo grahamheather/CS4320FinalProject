@@ -69,3 +69,7 @@ Overall goals:
   - set up server
   - implement receiving events from GroupMe on server
   - architecture documentation
+
+Sprint Retrospective:
+  - After the initial breakthrough necessary to successfully set up the server, implementing receiving events was straightforward
+  
