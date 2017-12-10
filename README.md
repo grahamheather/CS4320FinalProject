@@ -1,7 +1,10 @@
 # CS4320FinalProject
+
+## Team Members: Heather Graham, Benjamin Meyer, and Danny Jakle
+
 Our project is a bot that will assist in organizing Scrum using [GroupMe](https://groupme.com) (for communication), [Waffle](https://waffle.io) (for project management), and [GitHub](https://GitHub.com) (for version control).  The bot will help coordinate and organize actions from all three services.
 
-A guide to using the bot can be found [here](Guide.md).
+A guide to using the bot can be found [here](Guide.md).  (The emails listed for graders on the previous project have been added to a GroupMe with the bot set up on it.)
 
 A summary for each of the sprints completed for this project can be found [here](SprintOrganization/SprintOrganization.md).
 
