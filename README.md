@@ -18,6 +18,8 @@ Documentation:
   - [Use case diagram](CS4320FinalProject_UseCaseDiagram.pdf)
   - [Architecture diagram](Architecture.pdf)
   - [Architecture diagram notes](Architecture_Documentation.md)
+  
+Video Demonstration of the Product can be found at [this URL](https://www.youtube.com/watch?v=cHjfIKJyl5w&t=44s).
 
 A summary of ideas explored for the final project can be found [here](Ideas/Ideas.md).
 
